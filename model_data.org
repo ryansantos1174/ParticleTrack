@@ -1,0 +1,120 @@
+
+| Model |    Test Loss | Comments                        |
+| A     |     0.022079 | Bad training on validation data |
+| B     |     0.022109 | Bad training on validation data |
+| 0     |    0.0004720 |                                 |
+| C     |   0.00195396 | validation trains fine here     |
+| D     | 0.0017345127 |                                 |
+| E     |    0.0017159 |                                 |
+
+
+* Original 4-hit Model (0)
+   #+BEGIN_SRC python
+   class TestModel(tf.keras.Model):
+    def __init__(self, activation, neurons, output):
+        super(TestModel, self). __init__()
+        self.conv0 = tf.keras.layers.Conv1D(filters=64, kernel_size=2,
+                                            padding='same', activation='tanh')
+        self.pool = tf.keras.layers.MaxPooling1D()
+        self.conv1 = tf.keras.layers.Conv1D(filters=32, kernel_size=2,
+                                            padding='same', activation='tanh')
+        self.dense0 = tf.keras.layers.Dense(units=3)
+
+    def call(self, inputs):
+        x = self.conv0(inputs)
+        x = self.pool(x)
+        x = self.conv1(x)
+        x = self.pool(x)
+        x = self.dense0(x)
+        return x
+#+END_SRC
+* Base 8 Track Model (A)
+  #+BEGIN_SRC python
+    class EightTrackModelBase(tf.keras.Model):
+      def __init__(self, activation, neurons, output):
+	  super(EightTrackModelBase, self). __init__()
+	  self.conv0 = tf.keras.layers.Conv1D(filters=64, kernel_size=2,
+					      padding='valid', activation='relu')
+	  self.pool = tf.keras.layers.MaxPooling1D()
+	  self.conv1 = tf.keras.layers.Conv1D(filters=32, kernel_size=2,
+					      padding='valid', activation='relu')
+	  self.conv3 = tf.keras.layers.Conv1D(filters=16, kernel_size=2,
+					      padding='valid', activation='relu')
+	  self.dense0 = tf.keras.layers.Dense(units=3, activation='relu')
+	  self.dense1 = tf.keras.layers.Dense(units=32, activation='tanh')
+      def call(self, inputs):
+	  x = self.conv0(inputs)
+	  x = self.pool(x)
+	  x = self.conv1(x)
+	  x = self.pool(x)
+	  x = self.dense0(x)
+	  return x
+  #+END_SRC
+
+  This is the base model, I changed every activation function to relu because that is known to train better, the last activation is tanh though to ensure the
+  output is between -1 and 1
+
+* 8 Track Model all relu (B)
+  #+BEGIN_SRC python
+  class EightTrackModelRelu(tf.keras.Model):
+    def __init__(self, activation, neurons, output):
+        super(EightTrackModelRelu, self). __init__()
+        self.conv0 = tf.keras.layers.Conv1D(filters=64, kernel_size=2,
+                                            padding='valid', activation='relu')
+        self.pool = tf.keras.layers.MaxPooling1D()
+        self.conv1 = tf.keras.layers.Conv1D(filters=32, kernel_size=2,
+                                            padding='valid', activation='relu')
+        self.conv3 = tf.keras.layers.Conv1D(filters=16, kernel_size=2,
+                                            padding='valid', activation='relu')
+        self.dense0 = tf.keras.layers.Dense(units=3, activation='relu')
+        self.dense1 = tf.keras.layers.Dense(units=32, activation='relu')
+    def call(self, inputs):
+        x = self.conv0(inputs)
+        x = self.pool(x)
+        x = self.conv1(x)
+        x = self.pool(x)
+        x = self.dense0(x)
+        return x
+  #+END_SRC
+
+* 8 Track Model All Tanh (C)
+class EightTrackModelTanh(tf.keras.Model):
+    def __init__(self, activation, neurons, output):
+        super(EightTrackModelTanh, self). __init__()
+        self.conv0 = tf.keras.layers.Conv1D(filters=64, kernel_size=2,
+                                            padding='valid', activation='tanh')
+        self.pool = tf.keras.layers.MaxPooling1D()
+        self.conv1 = tf.keras.layers.Conv1D(filters=32, kernel_size=2,
+                                            padding='valid', activation='tanh')
+        self.conv3 = tf.keras.layers.Conv1D(filters=16, kernel_size=2,
+                                            padding='valid', activation='tanh')
+        self.dense0 = tf.keras.layers.Dense(units=3, activation='tanh')
+        self.dense1 = tf.keras.layers.Dense(units=32, activation='tanh')
+    def call(self, inputs):
+        x = self.conv0(inputs)
+        x = self.pool(x)
+        x = self.conv1(x)
+        x = self.pool(x)
+        x = self.dense0(x)
+        return x
+* 8 Track Average pooling (D)
+class EightTrackModelAvgPooling(tf.keras.Model):
+    def __init__(self, activation, neurons, output):
+        super(EightTrackModelAvgPooling, self). __init__()
+        self.conv0 = tf.keras.layers.Conv1D(filters=64, kernel_size=2,
+                                            padding='valid', activation='tanh')
+        self.pool = tf.keras.layers.AveragePooling1D()
+        self.conv1 = tf.keras.layers.Conv1D(filters=32, kernel_size=2,
+                                            padding='valid', activation='tanh')
+        self.conv3 = tf.keras.layers.Conv1D(filters=16, kernel_size=2,
+                                            padding='valid', activation='tanh')
+        self.dense0 = tf.keras.layers.Dense(units=3, activation='tanh')
+        self.dense1 = tf.keras.layers.Dense(units=32, activation='tanh')
+    def call(self, inputs):
+        x = self.conv0(inputs)
+        x = self.pool(x)
+        x = self.conv1(x)
+        x = self.pool(x)
+        x = self.dense0(x)
+        return x
+* 8 Track Avg, 3 dense
