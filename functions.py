@@ -6,8 +6,15 @@ import random
 import math
 import numpy as np
 
-
-    
+#Function used to find the root mean squared
+def rms(array):
+    square = 0
+    for i in array:
+        square += i**2
+    mean = square/len(array)
+    root_mean = math.sqrt(mean)
+    return root_mean
+        
             
 def spherical_conversion (df):
     # Getting the values that I need from the dataframe
