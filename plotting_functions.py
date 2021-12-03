@@ -49,6 +49,7 @@ def Plot_All_Results(model, valid_data_x, valid_data_y, max_values, dimension=3,
     # Formatting histogram
     for dim in range(dimension):
         plt.clf()
+        error = rms(empty_array[dim])
         n, bins, _ = plt.hist(empty_array[dim], bins=50)
         bins = bins[:-1]
         possible_values = ['x', 'y', 'z']
@@ -56,6 +57,7 @@ def Plot_All_Results(model, valid_data_x, valid_data_y, max_values, dimension=3,
         #Fitting gaussian curve over data
         popt, pcov = curve_fit(gauss_curve, bins, n)
         plt.plot(bins, gauss_curve(bins, *popt), 'r-')
+        plt.figtext(0.6, 0.6, f'RMS: {error}')
         
 
         # Saving the data and saving the configuration of the model
