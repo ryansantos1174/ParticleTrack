@@ -221,3 +221,27 @@ class EightTrackModelAvgPooling3Dense(tf.keras.Model):
         x = self.dense2(x)
         x = self.dense0(x)
         return x
+
+
+class TrackModelDropoutRelu(tf.keras.Model):
+    def __init__(self, activation, neurons, output, drop_rate):
+        super(TrackModelDropoutRelu, self). __init__()
+        self.conv0 = tf.keras.layers.Conv1D(filters=64, kernel_size=2,
+                                            padding='valid', activation=activation)
+        self.pool = tf.keras.layers.MaxPooling1D()
+        self.conv1 = tf.keras.layers.Conv1D(filters=32, kernel_size=2,
+                                            padding='valid', activation=activation)
+        self.conv3 = tf.keras.layers.Conv1D(filters=16, kernel_size=2,
+                                            padding='valid', activation=activation)
+        self.dense0 = tf.keras.layers.Dense(units=3, activation=activation)
+        self.dense1 = tf.keras.layers.Dense(units=32, activation=activation)
+        self.dropout = tf.keras.layers.Dropout(drop_rate)
+    def call(self, inputs):
+        x = self.conv0(inputs)
+        x = self.pool(x)
+        x = self.dropout(x)
+        x = self.conv1(x)
+        x = self.dropout(x)
+        x = self.pool(x)
+        x = self.dense0(x)
+        return x
