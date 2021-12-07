@@ -57,6 +57,7 @@ def Plot_All_Results(model, valid_data_x, valid_data_y, max_values, dimension=3,
         #Fitting gaussian curve over data
         popt, pcov = curve_fit(gauss_curve, bins, n)
         plt.plot(bins, gauss_curve(bins, *popt), 'r-')
+        plt.ylim(bottom=0)
         plt.figtext(0.6, 0.6, f'RMS: {error}')
         
 
