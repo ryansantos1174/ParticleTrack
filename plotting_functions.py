@@ -9,7 +9,7 @@ def gauss_curve(x, H, A, x0, sigma):
     return H + A * np.exp(-(x - x0)**2 / (2 * sigma ** 2))
 
 
-def Plot_All_Results(model, valid_data_x, valid_data_y, max_values, dimension=3,  ntracks=10, save_dir=None, SAVE=False, bad_points=False):
+def Plot_All_Results(model, valid_data_x, valid_data_y, max_values, dimension=3,  ntracks=10, pos_values=['x', 'y', 'z'], save_dir=None, SAVE=False, bad_points=False):
    
   
     # Getting presdictions and unnormalizing the data
@@ -52,8 +52,8 @@ def Plot_All_Results(model, valid_data_x, valid_data_y, max_values, dimension=3,
         error = rms(empty_array[dim])
         n, bins, _ = plt.hist(empty_array[dim], bins=50)
         bins = bins[:-1]
-        possible_values = ['x', 'y', 'z']
-        plt.title(possible_values[dim])
+        plt.title(pos_values[dim] + 'Residual')
+        plt.xlabel("Residual (mm)")
         #Fitting gaussian curve over data
         popt, pcov = curve_fit(gauss_curve, bins, n)
         plt.plot(bins, gauss_curve(bins, *popt), 'r-')
@@ -63,7 +63,7 @@ def Plot_All_Results(model, valid_data_x, valid_data_y, max_values, dimension=3,
 
         # Saving the data and saving the configuration of the model
         if ((SAVE) and (save_dir != None)):
-            resid_dir = os.path.join(save_dir, f'{possible_values[dim]}_resid_hist.png')
+            resid_dir = os.path.join(save_dir, f'{pos_values[dim]}_resid_hist.png')
             plt.savefig(resid_dir)
         plt.show()
 
@@ -77,11 +77,13 @@ def Plot_All_Results(model, valid_data_x, valid_data_y, max_values, dimension=3,
         for index, track in enumerate(valid_data_x):
             if index < ntracks:
                 for hit in track:
-                    plt.scatter(hit[0], hit[1], color='blue')
-                    plt.scatter(valid_data_y[index][0],
-                        valid_data_y[index][1], color='green')
-                    plt.scatter(prediction[index][0],
-                        prediction[index][1], color='red')
+                   input_hits =  plt.scatter(hit[0], hit[1], color='blue')
+                   output_hits = plt.scatter(valid_data_y[index][0],
+                                valid_data_y[index][1], color='green')
+                   network_prediction = plt.scatter(prediction[index][0],
+                                prediction[index][1], color='red')
+                plt.legend([input_hits, output_hits, network_prediction],['Input Hits', 'Output Hit', 'Neural Network Prediction'])    
             if SAVE:
                 plt.savefig(os.path.join(save_dir, f'track{index}.png'))
+           
             plt.show()
